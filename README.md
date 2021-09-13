@@ -2,7 +2,7 @@
 
 ## Introdução
 
-Esta REST API foi criada usando Flask-RESTful sob orientação do Desenvolvedor Sênior Rafael Galleani durante o curso "Desenvolvimento avançado Flask com REST API" na Dogital Innovation One.
+Esta REST API foi criada usando Flask-RESTful, sob orientação do Desenvolvedor Sênior Rafael Galleani, durante o curso "Desenvolvimento avançado Flask com REST API" na Digital Innovation One.
 
 ## Instalação
 
