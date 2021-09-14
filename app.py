@@ -1,9 +1,21 @@
 from flask import Flask, request
 from flask_restful import Resource, Api
-from models import Pessoas, Atividades
+from models import Pessoas, Atividades, Usuarios
+from flask_httpauth import HTTPBasicAuth
+from werkzeug.security import check_password_hash
 
+auth = HTTPBasicAuth()
 app = Flask(__name__)
 api = Api(app)
+
+@auth.verify_password
+def verificacao(login, senha):
+  if not (login, senha):
+    return False
+  user = Usuarios.query.filter_by(login=login).first()
+  if user is None or user.ativo == False:
+    return False
+  return check_password_hash(user.senha, senha)
 
 class Pessoa(Resource):
   def get(self, nome):
@@ -21,6 +33,7 @@ class Pessoa(Resource):
       }
     return response
   
+  @auth.login_required
   def put(self, nome):
     people = Pessoas.query.filter_by(nome=nome).first()
     
@@ -49,7 +62,8 @@ class Pessoa(Resource):
       }}
     else:
       return {'status':400, 'message':'Informe pelo menos o parâmetro \'nome\' ou \'idade\'.'}
-    
+  
+  @auth.login_required
   def delete(self, nome):
     people = Pessoas.query.filter_by(nome=nome).first()
     try:
@@ -74,7 +88,8 @@ class Lista_Pessoas(Resource):
         'message':'Nenhuma pessoa encontrada.'
       }
     return response
-  
+
+  @auth.login_required
   def post(self):
     try:
       dados = request.json
@@ -108,6 +123,7 @@ class Lista_Atividades(Resource):
       }
     return response
   
+  @auth.login_required
   def post(self):
     try:
       dados = request.json
@@ -158,6 +174,7 @@ class Uma_Atividade(Resource):
       activities = {'nome': activity.nome, 'pessoa': activity.pessoa.nome, 'id': activity.id, 'finalizada':activity.finalizada}
       return {'atividade':activities}
   
+  @auth.login_required
   def put(self, id):
     activity = Atividades.query.filter_by(id=id).first()
     if activity is None:
